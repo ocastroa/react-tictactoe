@@ -1,5 +1,5 @@
 body {
-  font: 14px "Century Gothic", Futura, sans-serif;
+  font: 22px "Century Gothic", sans-serif;
   margin: 20px;
 }
 
@@ -7,8 +7,27 @@ ol, ul {
   padding-left: 30px;
 }
 
-.p {
-  font-size: 50px;
+p {  
+  display: block;
+  margin-block-start: 0.7em;
+  margin-block-end: 0.7em;
+  margin-inline-start: 0px;
+  margin-inline-end: 0px;
+}
+
+.status-info {
+  margin-left: 20px;
+}
+
+.board {
+  display: flex;
+  flex-direction: row;
+}
+
+.game-info {
+  display: flex;
+  flex-direction: row;
+  margin-left: 20px;
 }
 
 .board-row:after {
@@ -46,35 +65,16 @@ ol, ul {
 
 .game {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
 }
 
 .game-info {
   margin-left: 20px;
 }
 
-.square--green {
-  background: green;
+.scores-container {
+  margin-left: 7px;
 }
 
-.scores_container {
-  flex: 2;
-  flex-direction: row;
-  align-items: center;
-}
 
-.score {
-  flex: 1;
-  align-items: center;
-}
 
-.user_score {
-  font-size: 25;
-  font-weight: bold;
-  color: black;
-}
-
-.username {
-  font-size: 20;
-  color: black;
-}

@@ -3,6 +3,7 @@ import Game from './Game';
 import PubNubReact from 'pubnub-react';
 import Swal from "sweetalert2";  
 import shortid  from 'shortid';
+import './Game.css';
  
 class App extends Component {
   constructor(props) {  
@@ -18,7 +19,6 @@ class App extends Component {
       xUsername: '',
       oUsername: '',
       isPlaying: false,
-      // is_waiting: false,
       isRoomCreator: false,
       isDisabled: false
     };
@@ -71,6 +71,7 @@ class App extends Component {
       Swal.fire({  
         position: 'top',
         text: 'Please enter your username', 
+        confirmButtonColor: 'rgb(208,33,41)',
         width: 230,
         customClass: {
             heightAuto: false
@@ -102,7 +103,8 @@ class App extends Component {
   
       this.setState({
         piece: 'X',
-        isRoomCreator: true
+        isRoomCreator: true,
+        isDisabled: true
       });  
 
       this.pubnub.publish({
@@ -119,6 +121,7 @@ class App extends Component {
     if(this.state.username === ''){
       Swal.fire({  
         position: 'top',
+        confirmButtonColor: 'rgb(208,33,41)',
         text: 'Please enter your username', 
         width: 230,
         customClass: {
@@ -129,10 +132,12 @@ class App extends Component {
 
     else{
       Swal.fire({
+        position: 'top',
         input: 'text',
         allowOutsideClick: false,
         inputPlaceholder: 'Enter the room id',
         showCancelButton: true,
+        confirmButtonColor: 'rgb(208,33,41)',
         confirmButtonText: 'Ok',
         width: 280,
         customClass: {
@@ -177,8 +182,8 @@ class App extends Component {
       xUsername: '',
       oUsername: '',
       isPlaying: false,
-      // is_waiting: false,
       isRoomCreator: false,
+      isDisabled: false
     });
 
     // Subscribe to gameLobby again on a new game
@@ -190,15 +195,11 @@ class App extends Component {
   }
   
   render() {  
-      const gameInfo = {
-        marginLeft: '40px'
-      };
-
     return (  
         <div> 
           {
             !this.state.isPlaying &&
-            <div style={gameInfo}>
+            <div className="game-info">
               <div>
                 <input 
                   type="text" 

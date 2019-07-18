@@ -3,12 +3,6 @@ import Square from './Square';
 
 class Board extends React.Component {
   createBoard(row, col) {
-    const boardRow = {
-      clear: 'both',
-      content: '',
-      display: 'table'
-    };
-
     const board = [];
     let cellCounter = 0;
 
@@ -17,24 +11,15 @@ class Board extends React.Component {
       for (let j = 0; j < col; j += 1) {
         columns.push(this.renderSquare(cellCounter++));
       }
-      board.push(<div key={i} style={boardRow}>{columns}</div>);
+      board.push(<div key={i} className="board-row">{columns}</div>);
     }
 
     return board;
   }
 
   renderSquare(i) {
-    const winnerClass =
-      this.props.winnerSquares &&
-      (this.props.winnerSquares[0] === i ||
-        this.props.winnerSquares[1] === i ||
-        this.props.winnerSquares[2] === i)
-        ? 'square--green'
-        : '';
-
     return (
       <Square
-        winnerClass={winnerClass}
         key={i}
         value={this.props.squares[i]}
         onClick={() => this.props.onClick(i)}

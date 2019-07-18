@@ -26,7 +26,8 @@ class Game extends React.Component {
 
       else if(msg.message.reset){
         this.setState({
-          squares: Array(9).fill('')
+          squares: Array(9).fill(''),
+          myTurn: false
         });
         this.turn = 'X';
         this.gameOver = false;
@@ -35,7 +36,7 @@ class Game extends React.Component {
         // this.count = 0;
       }
 
-      else if(msg.message.gameOver){
+      else if(msg.message.endGame){
         this.props.pubnub.unsubscribe({
           channels : [this.props.channel]
         });
@@ -45,7 +46,7 @@ class Game extends React.Component {
     });
   }
 
-  newRound = () => {
+  newRound = (winner) => {
     console.log('starting new round')
     // Show this alert if the player is not the room creator
     console.log(this.props.isRoomCreator)
@@ -54,7 +55,9 @@ class Game extends React.Component {
       Swal.fire({  
         position: 'top',
         allowOutsideClick: false,
-        title: 'Waiting for a new round...',
+        title: `Player ${winner} won!`,
+        text: 'Waiting for a new round...',
+        confirmButtonColor: 'rgb(208,33,41)',
         width: 280,
         customClass: {
             heightAuto: false
@@ -68,10 +71,11 @@ class Game extends React.Component {
       Swal.fire({      
         position: 'top',
         allowOutsideClick: false,
-        title: "Continue Playing?",
+        title: `Player ${winner} won!`,
+        text: 'Continue Playing?',
         showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: 'rgb(208,33,41)',
+        confirmButtonColor: 'rgb(208,33,41)',
+        cancelButtonColor: '#aaa',
         cancelButtonText: 'Nope',
         confirmButtonText: 'Yea!',
         width: 280,
@@ -91,7 +95,7 @@ class Game extends React.Component {
         else{
           this.props.pubnub.publish({
             message: {
-              gameOver: true
+              endGame: true
             },
             channel: this.props.channel
           });
@@ -123,7 +127,7 @@ class Game extends React.Component {
 		}
 		// End the game once there is a winner
 		this.gameOver = true;
-		this.newRound();	
+		this.newRound(winner);	
   }
   
   checkForWinner = (squares) => {
@@ -200,52 +204,47 @@ class Game extends React.Component {
   }
 
   render() {
-    // const { winner, winnerRow } = this.checkForWinner(this.state.squares);
-
     let status;
     status = `Current player: ${this.state.myTurn ? 'O' : 'X'}`;
-    // if (winner) {
-    //   status = `Winner ${winner}`;
-    // } 
-    // else {
-    //   status = `Current player: ${this.state.myTurn ? 'O' : 'X'}`;
-    // }
 
-    const gameStyle = {
-      display: 'flex',
-      flexDirection: 'column'
-    };
+    // const gameStyle = {
+    //   display: 'flex',
+    //   flexDirection: 'column'
+    // };
 
-    const board = {
-      display: 'flex',
-      flexDirection: 'row'
-    };
+    // const board = {
+    //   display: 'flex',
+    //   flexDirection: 'row'
+    // };
 
-    const playerInfo = {
-      display: 'flex',
-      flexDirection: 'row'
-    };
+    // const playerInfo = {
+    //   display: 'flex',
+    //   flexDirection: 'row'
+    // };
 
     return (
-      <div style={gameStyle}>
-        <div style={board}>
+      <div className="game">
+        <div className="board">
           <Board
               squares={this.state.squares}
               onClick={index => this.onMakeMove(index)}
             />  
-            <p>{status}</p>        
+            <p className="status-info">{status}</p>        
         </div>
         
-        <div style={playerInfo}>
-          <div className="">
-            <p> {this.state.xScore} </p>
-            <p> {this.props.xUsername} (X) </p>
+        <div className="scores-container">
+          <div>
+            <p>{this.props.xUsername} (X): {this.state.xScore} </p>
           </div>
 
-          <div className="">
+          <div>
+            <p>{this.props.oUsername} (O): {this.state.oScore} </p>
+          </div>
+
+          {/* <div className="">
             <p> {this.state.oScore} </p>
             <p> {this.props.oUsername} (O) </p>
-          </div>
+          </div> */}
         </div>   
       </div>
     );
