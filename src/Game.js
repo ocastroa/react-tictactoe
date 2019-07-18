@@ -1,6 +1,6 @@
 import React from 'react';
 import Board from './Board';
-
+import Swal from "sweetalert2";  
 
 class Game extends React.Component {
   constructor(props) {
@@ -13,7 +13,8 @@ class Game extends React.Component {
     };
 
     this.turn = 'X';
-    // this.game_over = false;
+    this.gameOver = false;
+    this.counter = 0;
   }
 
   componentWillMount(){
@@ -23,20 +24,111 @@ class Game extends React.Component {
         this.publishMove(msg.message.index, msg.message.piece);
       }
 
-      else if(msg.message.reset || msg.message.gameOver){
+      else if(msg.message.reset){
         this.setState({
-          squares: Array(9).fill(''),
-          myTurn: false
+          squares: Array(9).fill('')
         });
-
         this.turn = 'X';
-        this.setState({isDisabled: false});
+        this.gameOver = false;
+        this.counter = 0;
+        Swal.close()
+        // this.count = 0;
+      }
+
+      else if(msg.message.gameOver){
+        this.props.pubnub.unsubscribe({
+          channels : [this.props.channel]
+        });
+        Swal.close()
+        this.props.endGame();
       }
     });
   }
 
-  calculateWinner = (squares) => {
-    const lines = [
+  newRound = () => {
+    console.log('starting new round')
+    // Show this alert if the player is not the room creator
+    console.log(this.props.isRoomCreator)
+    console.log(this.gameOver)
+    if((this.props.isRoomCreator === false) && this.gameOver){
+      Swal.fire({  
+        position: 'top',
+        allowOutsideClick: false,
+        title: 'Waiting for a new round...',
+        width: 280,
+        customClass: {
+            heightAuto: false
+        } ,
+      });
+      this.turn = 'X'; // Set turn to X so Player O can't make a move 
+    } 
+
+    // Show this alert to the room creator
+    else if(this.props.isRoomCreator && this.gameOver){
+      Swal.fire({      
+        position: 'top',
+        allowOutsideClick: false,
+        title: "Continue Playing?",
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: 'rgb(208,33,41)',
+        cancelButtonText: 'Nope',
+        confirmButtonText: 'Yea!',
+        width: 280,
+        customClass: {
+            heightAuto: false
+        } ,
+      }).then((result) => {
+        if (result.value) {
+          this.props.pubnub.publish({
+            message: {
+              reset: true
+            },
+            channel: this.props.channel
+          });
+        }
+
+        else{
+          this.props.pubnub.publish({
+            message: {
+              gameOver: true
+            },
+            channel: this.props.channel
+          });
+        }
+      })      
+    }
+   }
+
+  announceWinner = (winner) => {
+    console.log('announcing winner')
+    console.log(winner);
+		let pieces = {
+			'X': this.state.xScore,
+			'O': this.state.oScore
+		}
+	
+		// Update score for the winner
+		if(winner === 'X'){
+			pieces['X'] += 1;
+			this.setState({
+				xScore: pieces['X']
+			});
+		}
+		else{
+			pieces['O'] += 1;
+			this.setState({
+				oScore: pieces['O']
+			});
+		}
+		// End the game once there is a winner
+		this.gameOver = true;
+		this.newRound();	
+  }
+  
+  checkForWinner = (squares) => {
+    console.log('checking if there is a winner')
+    const possibleCombinations = [
       [0, 1, 2],
       [3, 4, 5],
       [6, 7, 8],
@@ -47,38 +139,25 @@ class Game extends React.Component {
       [2, 4, 6],
     ];
   
-    for (let i = 0; i < lines.length; i += 1) {
-      const [a, b, c] = lines[i];
+    for (let i = 0; i < possibleCombinations.length; i += 1) {
+      const [a, b, c] = possibleCombinations[i];
       if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-        return { winner: squares[a], winnerRow: lines[i] };
+        this.announceWinner(squares[a]);
+        return;
       }
     }
-  
-    return { winner: null, winnerRow: null };
+
+    this.counter++;
+    // Check if the game ends in a draw
+    if(this.counter === 9){
+      this.gameOver = true;
+      this.newRound();
+    }
   };
-  
-  getLocation = (move) => {
-    const locationMap = {
-      0: {row: 0, col: 0},
-      1: {row: 0, col: 1},
-      2: {row: 0, col: 2},
-      3: {row: 1, col: 0},
-      4: {row: 1, col: 1},
-      5: {row: 1, col: 2},
-      6: {row: 2, col: 0},
-      7: {row: 2, col: 1},
-      8: {row: 2, col: 2},
-    };
-  
-    return locationMap[move];
-  };
-  
+   
   publishMove = (index, piece) => {
     const squares = this.state.squares;
 
-    if (this.calculateWinner(squares).winner || squares[index]) {
-      return;
-    }
     squares[index] = piece;
     console.log('squares:' + squares[index]);
     this.turn = (squares[index] === 'X')? 'O' : 'X';
@@ -86,6 +165,8 @@ class Game extends React.Component {
       squares: squares,
       myTurn: !this.state.myTurn,
     });
+    console.log('check for winner')
+    this.checkForWinner(squares)
   }
 
   onMakeMove = (index) =>{
@@ -95,9 +176,6 @@ class Game extends React.Component {
     if(!squares[index] && (this.turn === this.props.piece)){
       const squares = this.state.squares;
   
-      // if (this.calculateWinner(squares).winner || squares[index]) {
-      //   return;
-      // }
       squares[index] = this.props.piece;
       console.log('squares:' + squares[index]);
       this.setState({
@@ -105,9 +183,6 @@ class Game extends React.Component {
         myTurn: !this.state.myTurn,
       });
   
-      // let temp = this.getLocation(i);
-      // let row = temp.row;
-      // let col = temp.col;  
       this.turn = (this.turn === 'X') ? 'O' : 'X';
 
       this.props.pubnub.publish({
@@ -117,20 +192,24 @@ class Game extends React.Component {
           turn: this.turn
         },
         channel: this.props.channel
-      });       
+      });  
+
+      console.log('check for winner')
+      this.checkForWinner(squares)
     }
   }
 
   render() {
-    const { winner, winnerRow } = this.calculateWinner(this.state.squares);
+    // const { winner, winnerRow } = this.checkForWinner(this.state.squares);
 
     let status;
-    if (winner) {
-      status = `Winner ${winner}`;
-    } 
-    else {
-      status = `Current player: ${this.state.myTurn ? 'O' : 'X'}`;
-    }
+    status = `Current player: ${this.state.myTurn ? 'O' : 'X'}`;
+    // if (winner) {
+    //   status = `Winner ${winner}`;
+    // } 
+    // else {
+    //   status = `Current player: ${this.state.myTurn ? 'O' : 'X'}`;
+    // }
 
     const gameStyle = {
       display: 'flex',
@@ -152,7 +231,6 @@ class Game extends React.Component {
         <div style={board}>
           <Board
               squares={this.state.squares}
-              winnerSquares={winnerRow}
               onClick={index => this.onMakeMove(index)}
             />  
             <p>{status}</p>        

@@ -57,6 +57,7 @@ class App extends Component {
           oUsername: msg.message.username,
           isPlaying: true
         });  
+        Swal.close()
       }
     });
   }
@@ -90,6 +91,7 @@ class App extends Component {
 
       Swal.fire({
         position: 'top',
+        allowOutsideClick: false,
         title: 'Share this room ID with your friend',
         text: roomId,
         width: 300,
@@ -128,6 +130,7 @@ class App extends Component {
     else{
       Swal.fire({
         input: 'text',
+        allowOutsideClick: false,
         inputPlaceholder: 'Enter the room id',
         showCancelButton: true,
         confirmButtonText: 'Ok',
@@ -164,41 +167,26 @@ class App extends Component {
       },
       channel: 'gameLobby'
     });
+  }
 
-    
-    // Check that the lobby is not full
-    // this.pubnub.hereNow({
-    //   channels: [this.channel], 
-    // }).then((response) => { 
-    //   console.log(response.totalOccupancy);
-    //   // If totalOccupancy is less than or equal to 1, then player can't join a room since it has not been created
-    //   if(response.totalOccupancy <= 1){
-    //     console.log('lobby empty')     
-    //   }
-    //   else if(response.totalOccupancy === 2){
-    //     this.pubnub.subscribe({
-    //       channels: [this.channel],
-    //       withPresence: true
-    //     });
-        
-    //     this.setState({
-    //       piece: 'O',
-    //     });  
-        
-    //     this.pubnub.publish({
-    //       message: {
-    //         notRoomCreator: true,
-    //         username: this.state.username
-    //       },
-    //       channel: 'gameLobby'
-    //     });
-    //   } 
-    //   else{
-    //     console.log('lobby full')
-    //   }
-    // }).catch((error) => { 
-    //     console.log(error)
-    // });
+  // Reset everything
+  endGame = () => {
+    this.setState({
+      username: '',
+      piece: '',
+      xUsername: '',
+      oUsername: '',
+      isPlaying: false,
+      // is_waiting: false,
+      isRoomCreator: false,
+    });
+
+    // Subscribe to gameLobby again on a new game
+    this.channel = null;
+    this.pubnub.subscribe({
+      channels: ['gameLobby'],
+      withPresence: true
+    });
   }
   
   render() {  
@@ -208,18 +196,6 @@ class App extends Component {
 
     return (  
         <div> 
-          {
-            this.state.isPlaying &&
-            <Game 
-              pubnub={this.pubnub}
-              channel={this.channel} 
-              piece={this.state.piece}
-              isRoomCreator={this.state.isRoomCreator}
-              xUsername={this.state.xUsername}
-              oUsername={this.state.oUsername}
-            />
-          }
-
           {
             !this.state.isPlaying &&
             <div style={gameInfo}>
@@ -243,6 +219,19 @@ class App extends Component {
                 </button>
               </div>
             </div>    
+          }
+
+          {
+            this.state.isPlaying &&
+            <Game 
+              pubnub={this.pubnub}
+              channel={this.channel} 
+              piece={this.state.piece}
+              isRoomCreator={this.state.isRoomCreator}
+              xUsername={this.state.xUsername}
+              oUsername={this.state.oUsername}
+              endGame={this.endGame}
+            />
           }
         </div>
     );  
