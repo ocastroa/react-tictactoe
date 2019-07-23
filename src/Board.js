@@ -2,6 +2,7 @@ import React from 'react';
 import Square from './Square';
 
 class Board extends React.Component {
+  // Create the 3 x 3 board
   createBoard(row, col) {
     const board = [];
     let cellCounter = 0;

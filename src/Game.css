@@ -17,17 +17,36 @@ p {
 
 .status-info {
   margin-left: 20px;
+  color: rgb(208,33,41);
 }
 
 .board {
   display: flex;
   flex-direction: row;
+  width: 16.5em;
 }
 
-.game-info {
+.title {
   display: flex;
-  flex-direction: row;
-  margin-left: 20px;
+  flex-direction: column;
+  margin-top: auto;
+  margin-left: auto;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+  color: rgb(208,33,41);
+}
+
+.button-container {
+  margin-left: 1em;
+}
+
+.title-class {
+  font-size: 1.5rem;
+}
+
+.popup-class{
+  height: 165px;
 }
 
 .board-row:after {
@@ -66,15 +85,51 @@ p {
 .game {
   display: flex;
   flex-direction: column;
-}
-
-.game-info {
-  margin-left: 20px;
+  margin-top: 1.2em;
+  margin-left: auto;
+  justify-content: center;
+  align-items: center;
+  min-height: 15vh;
 }
 
 .scores-container {
-  margin-left: 7px;
+  margin-right: 10em;
+  color: rgb(208,33,41);
 }
 
+.create-button {
+  margin-right: 5px;
+  width: 4.5em;
+  height: 2.0em;
+}
 
+.join-button {
+  width: 4.5em;
+  height: 2.0em;
+}
 
+.input-class{
+  margin-top: -0.1em;
+}
+
+.join-confirm-button-class {
+  margin: .3125em;
+  padding: .5em 1.8em;
+  margin-bottom: 1em;
+}
+
+.join-cancel-button-class{
+  margin: .3125em;
+  padding: .5em 1.8em;
+  margin-bottom: 1em;
+}
+
+.confirm-button-class {
+  margin: .3125em;
+  padding: .5em 1.8em;
+}
+
+.cancel-button-class {
+  margin: .3125em;
+  padding: .5em 1.8em;
+}
