@@ -10,8 +10,8 @@ class App extends Component {
   constructor(props) {  
     super(props);
     this.pubnub = new PubNubReact({
-      publishKey: "pub-c-7582f9a0-7559-4b25-886b-fdf06848c051", 
-      subscribeKey: "sub-c-66a09740-a72f-11e9-b363-464e5cb6391a"    
+      publishKey: "ENTER_YOUR_PUBLISH_KEY_HERE", 
+      subscribeKey: "ENTER_YOUR_SUBSCRIBE_KEY_HERE"    
     });
     
     this.state = {
@@ -22,7 +22,7 @@ class App extends Component {
       myTurn: false,
     };
 
-    this.channel = null;
+    this.lobbyChannel = null;
     this.gameChannel = null;
     this.roomId = null;    
     this.pubnub.init(this);
@@ -30,14 +30,14 @@ class App extends Component {
   
   componentWillUnmount() {
     this.pubnub.unsubscribe({
-      channels : [this.channel, this.gameChannel]
+      channels : [this.lobbyChannel, this.gameChannel]
     });
   }
   
   componentDidUpdate() {
     // Check that the player is connected to a channel
-    if(this.channel != null){
-      this.pubnub.getMessage(this.channel, (msg) => {
+    if(this.lobbyChannel != null){
+      this.pubnub.getMessage(this.lobbyChannel, (msg) => {
         // Start the game once an opponent joins the channel
         if(msg.message.notRoomCreator){
           // Create a different channel for the game
@@ -62,29 +62,29 @@ class App extends Component {
   onPressCreate = (e) => {
     // Create a random name for the channel
     this.roomId = shortid.generate().substring(0,5);
-    this.channel = 'tictactoelobby--' + this.roomId;
+    this.lobbyChannel = 'tictactoelobby--' + this.roomId;
 
     this.pubnub.subscribe({
-      channels: [this.channel],
+      channels: [this.lobbyChannel],
       withPresence: true
     });
 
-    // Open the modal
-    Swal.fire({
-      position: 'top',
-      allowOutsideClick: false,
-      title: 'Share this room ID with your friend',
-      text: this.roomId,
-      width: 275,
-      padding: '0.7em',
-      // Custom CSS
-      customClass: {
-          heightAuto: false,
-          title: 'title-class',
-          popup: 'popup-class',
-          confirmButton: 'confirm-button-class'
-      }
-    })
+  // Open the modal
+  Swal.fire({
+    position: 'top',
+    allowOutsideClick: false,
+    title: 'Share this room ID with your friend',
+    text: this.roomId,
+    width: 275,
+    padding: '0.7em',
+    // Custom CSS
+    customClass: {
+        heightAuto: false,
+        title: 'title-class',
+        popup: 'popup-class',
+        confirmButton: 'confirm-button-class'
+    }
+  })
 
     this.setState({
       piece: 'X',
@@ -121,17 +121,17 @@ class App extends Component {
   }
 
   // Join a room channel
-  joinRoom = (joinChannel) => {
-    this.roomId = joinChannel;
-    this.channel = 'tictactoelobby--' + this.roomId;
+  joinRoom = (value) => {
+    this.roomId = value;
+    this.lobbyChannel = 'tictactoelobby--' + this.roomId;
 
     // Check the number of people in the channel
     this.pubnub.hereNow({
-      channels: [this.channel], 
+      channels: [this.lobbyChannel], 
     }).then((response) => { 
         if(response.totalOccupancy < 2){
           this.pubnub.subscribe({
-            channels: [this.channel],
+            channels: [this.lobbyChannel],
             withPresence: true
           });
           
@@ -143,7 +143,7 @@ class App extends Component {
             message: {
               notRoomCreator: true,
             },
-            channel: this.channel
+            channel: this.lobbyChannel
           });
         } 
         else{
@@ -178,13 +178,13 @@ class App extends Component {
       myTurn: false,
     });
 
-    this.pubnub.unsubscribe({
-      channels : [this.channel, this.gameChannel]
-    });
-
-    this.channel = null;
+    this.lobbyChannel = null;
     this.gameChannel = null;
     this.roomId = null;  
+
+    this.pubnub.unsubscribe({
+      channels : [this.lobbyChannel, this.gameChannel]
+    });
   }
   
   render() {  
@@ -225,7 +225,7 @@ class App extends Component {
             this.state.isPlaying &&
             <Game 
               pubnub={this.pubnub}
-              channel={this.gameChannel} 
+              gameChannel={this.gameChannel} 
               piece={this.state.piece}
               isRoomCreator={this.state.isRoomCreator}
               myTurn={this.state.myTurn}

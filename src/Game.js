@@ -17,8 +17,8 @@ class Game extends React.Component {
     this.counter = 0;
   }
 
-  componentWillMount(){
-    this.props.pubnub.getMessage(this.props.channel, (msg) => {
+  componentDidMount(){
+    this.props.pubnub.getMessage(this.props.gameChannel, (msg) => {
       // Publish move to the opponent's board
       if(msg.message.turn === this.props.piece){
         this.publishMove(msg.message.index, msg.message.piece);
@@ -45,13 +45,14 @@ class Game extends React.Component {
     });
   }
 
-  newRound = () => {
+  newRound = (winner) => {
+    let title = (winner === null) ? 'Tie game!' : `Player ${winner} won!`;
     // Show this if the player is not the room creator
     if((this.props.isRoomCreator === false) && this.gameOver){
       Swal.fire({  
         position: 'top',
         allowOutsideClick: false,
-        title: `Player won!`,
+        title: title,
         text: 'Waiting for a new round...',
         confirmButtonColor: 'rgb(208,33,41)',
         width: 275,
@@ -70,7 +71,7 @@ class Game extends React.Component {
       Swal.fire({      
         position: 'top',
         allowOutsideClick: false,
-        title: `Player won!`,
+        title: title,
         text: 'Continue Playing?',
         showCancelButton: true,
         confirmButtonColor: 'rgb(208,33,41)',
@@ -91,7 +92,7 @@ class Game extends React.Component {
             message: {
               reset: true
             },
-            channel: this.props.channel
+            channel: this.props.gameChannel
           });
         }
 
@@ -101,7 +102,7 @@ class Game extends React.Component {
             message: {
               endGame: true
             },
-            channel: this.props.channel
+            channel: this.props.gameChannel
           });
         }
       })      
@@ -129,7 +130,7 @@ class Game extends React.Component {
 		}
 		// End the game once there is a winner
 		this.gameOver = true;
-		this.newRound();	
+		this.newRound(winner);	
   }
   
   checkForWinner = (squares) => {
@@ -159,7 +160,7 @@ class Game extends React.Component {
     // The board is filled up and there is no winner
     if(this.counter === 9){
       this.gameOver = true;
-      this.newRound();
+      this.newRound(null);
     }
   };
    
@@ -200,7 +201,7 @@ class Game extends React.Component {
           piece: this.props.piece,
           turn: this.turn
         },
-        channel: this.props.channel
+        channel: this.props.gameChannel
       });  
 
       // Check if there is a winner

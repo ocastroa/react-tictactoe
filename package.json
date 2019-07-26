@@ -9,7 +9,7 @@
     "react-dom": "^16.8.6",
     "react-scripts": "3.0.1",
     "shortid": "^2.2.14",
-    "sweetalert2": "^8.13.6",
+    "sweetalert2": "^8.14.0",
     "sweetalert2-react-content": "^1.1.0"
   },
   "scripts": {
