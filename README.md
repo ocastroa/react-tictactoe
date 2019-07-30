@@ -2,7 +2,7 @@
 Want to develop a multiplayer game without having to worry about building your own realtime infrastructure? In this tutorial, you will learn how to do so by building a tic tac toe game in React. We will use [PubNub's React SDK](https://www.pubnub.com/docs/react-native-javascript/pubnub-javascript-sdk) to connect two players to a game channel. Every move the players makes in the board will be seen by both players in realtime! 
 
 <p align="center">
-  <img src="./media/place-piece-on-board.png" alt="Enable Presence add-on" width="480" height="300" />
+  <img src="./media/place-piece-on-board.png" alt="Enable Presence add-on" width="750" height="300" />
 </p>
 
 ## Setup
