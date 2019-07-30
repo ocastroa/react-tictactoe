@@ -164,7 +164,7 @@ class Game extends React.Component {
     }
   };
    
-  // Opponent's move is publish to the board
+  // Opponent's move is published to the board
   publishMove = (index, piece) => {
     const squares = this.state.squares;
 
