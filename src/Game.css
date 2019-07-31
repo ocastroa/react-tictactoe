@@ -41,14 +41,6 @@ p {
   margin-left: 1em;
 }
 
-.title-class {
-  font-size: 1.5rem;
-}
-
-.popup-class{
-  height: 165px;
-}
-
 .board-row:after {
   clear: both;
   content: "";
@@ -112,24 +104,21 @@ p {
   margin-top: -0.1em;
 }
 
-.join-confirm-button-class {
-  margin: .3125em;
-  padding: .5em 1.8em;
-  margin-bottom: 1em;
+.title-class {
+  font-size: 1.5rem; 
 }
 
-.join-cancel-button-class{
-  margin: .3125em;
-  padding: .5em 1.8em;
-  margin-bottom: 1em;
+.popup-class{
+  height: 165px; 
 }
 
-.confirm-button-class {
-  margin: .3125em;
-  padding: .5em 1.8em;
+.join-button-class {
+  margin: .3125em; 
+  padding: .5em 1.8em; 
+  margin-bottom: 1em; 
 }
 
-.cancel-button-class {
-  margin: .3125em;
-  padding: .5em 1.8em;
+.button-class {
+  margin: .3125em; 
+  padding: .5em 1.8em; 
 }

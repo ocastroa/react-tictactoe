@@ -82,7 +82,7 @@ class App extends Component {
         heightAuto: false,
         title: 'title-class',
         popup: 'popup-class',
-        confirmButton: 'confirm-button-class'
+        confirmButton: 'button-class'
     }
   })
 
@@ -109,8 +109,8 @@ class App extends Component {
       customClass: {
         heightAuto: false,
         popup: 'popup-class',
-        confirmButton: 'join-confirm-button-class ',
-        cancelButton: 'join-cancel-button-class'
+        confirmButton: 'join-button-class ',
+        cancelButton: 'join-button-class'
       } 
     }).then((result) => {
       // Check if the user typed a value in the input field
@@ -159,7 +159,7 @@ class App extends Component {
                 heightAuto: false,
                 title: 'title-class',
                 popup: 'popup-class',
-                confirmButton: 'confirm-button-class'
+                confirmButton: 'button-class'
             }
           })
         }

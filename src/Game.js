@@ -60,7 +60,7 @@ class Game extends React.Component {
             heightAuto: false,
             title: 'title-class',
             popup: 'popup-class',
-            confirmButton: 'confirm-button-class',
+            confirmButton: 'button-class',
         } ,
       });
       this.turn = 'X'; // Set turn to X so Player O can't make a move 
@@ -81,9 +81,10 @@ class Game extends React.Component {
         width: 275,
         customClass: {
             heightAuto: false,
+            title: 'title-class',
             popup: 'popup-class',
-            confirmButton: 'confirm-button-class',
-            cancelButton: 'cancel-button-class'
+            confirmButton: 'button-class',
+            cancelButton: 'button-class'
         } ,
       }).then((result) => {
         // Start a new round
